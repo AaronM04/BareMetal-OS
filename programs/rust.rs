@@ -4,13 +4,21 @@
 // rustc -O --crate-type lib -o rust.o --emit obj rust.rs
 // ld -T app.ld -o rust.app rust.o
 
+
+#![feature(custom_attribute)]
+#![feature(no_std)]
+
 #![no_std]
-#![allow(ctypes)]
 
 #![feature(lang_items)]
-#[lang="sized"]
-trait Sized {}
 
+#![feature(core)]
+
+use core::prelude::*;
+
+extern crate core;
+
+#[derive(Copy,Clone)]
 enum Color {
     Black       = 0,
     Red         = 1,
@@ -30,28 +38,23 @@ enum Color {
     White       = 15,
 }
 
-enum Option<T> {
-    None,
-    Some(T)
-}
-
 struct IntRange {
-    cur: int,
-    max: int
+    cur: u64,
+    max: u64
 }
 
 impl IntRange {
-    fn next(&mut self) -> Option<int> {
+    fn next(&mut self) -> Option<u64> {
         if self.cur < self.max {
             self.cur += 1;
-            Some(self.cur - 1)
+            Option::Some(self.cur - 1)
         } else {
-            None
+            Option::None
         }
     }
 }
 
-fn range(lo: int, hi: int) -> IntRange {
+fn range(lo: u64, hi: u64) -> IntRange {
     IntRange { cur: lo, max: hi }
 }
 
@@ -59,18 +62,17 @@ fn clear_screen(background: Color) {
     let mut r = range(0, 80 * 25);
     loop {
         match r.next() {
-            Some(x) => {
+            Option::Some(x) => {
                 unsafe {
                    *((0xb8000 + x * 2) as *mut u16) = (background as u16) << 12;
                 }
             },
-            None => {break}
+            Option::None => {break}
         }
     }
 }
 
 #[no_mangle]
-#[no_split_stack]
 pub fn main() {
-    clear_screen(LightRed);
+    clear_screen(Color::LightRed);
 }
