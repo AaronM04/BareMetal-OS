@@ -45,36 +45,10 @@ enum Color {
     White       = 15,
 }
 
-struct IntRange {
-    cur: u64,
-    max: u64
-}
-
-impl IntRange {
-    fn next(&mut self) -> Option<u64> {
-        if self.cur < self.max {
-            self.cur += 1;
-            Option::Some(self.cur - 1)
-        } else {
-            Option::None
-        }
-    }
-}
-
-fn range(lo: u64, hi: u64) -> IntRange {
-    IntRange { cur: lo, max: hi }
-}
-
 fn clear_screen(background: Color) {
-    let mut r = range(0, 80 * 25);
-    loop {
-        match r.next() {
-            Option::Some(x) => {
-                unsafe {
-                   *((0xb8000 + x * 2) as *mut u16) = (background as u16) << 12;
-                }
-            },
-            Option::None => {break}
+    for x in 0 .. 80*25 {
+        unsafe {
+           *((0xb8000 + x * 2) as *mut u16) = (background as u16) << 12;
         }
     }
 }
