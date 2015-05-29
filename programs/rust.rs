@@ -18,6 +18,13 @@ use core::prelude::*;
 
 extern crate core;
 
+
+#[no_mangle]
+pub fn main() {
+    clear_screen(Color::LightRed);
+}
+
+
 #[derive(Copy,Clone)]
 enum Color {
     Black       = 0,
@@ -70,9 +77,4 @@ fn clear_screen(background: Color) {
             Option::None => {break}
         }
     }
-}
-
-#[no_mangle]
-pub fn main() {
-    clear_screen(Color::LightRed);
 }
